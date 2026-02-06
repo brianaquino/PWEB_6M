@@ -1,0 +1,16 @@
+# --- Ignorar carpetas del entorno virtual (que están aquí mismo) ---
+bin/
+lib/
+lib64
+include/
+share/
+pyvenv.cfg
+
+# --- Ignorar archivos basura de Python ---
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# --- Otros ---
+.vscode/
+.env
