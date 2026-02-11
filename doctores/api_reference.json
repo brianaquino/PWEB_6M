@@ -1,0 +1,182 @@
+{
+  "microservice": "Doctores",
+  "version": "1.0.0",
+  "base_url": "http://localhost:8002",
+  "description": "Microservicio para gestión de doctores especializados",
+  "supported_methods": ["GET", "POST", "DELETE"],
+  "especialidades": [
+    "cardiología",
+    "neurología",
+    "pediatría",
+    "cirugía",
+    "dermatología",
+    "oftalmología",
+    "oncología",
+    "psicología"
+  ],
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/doctores",
+      "description": "Crear nuevo doctor",
+      "request_body": {
+        "nombre": "string",
+        "especialidad": "string (un valor de especialidades)"
+      },
+      "response": {
+        "status": 201,
+        "body": {
+          "id": "uuid",
+          "nombre": "string",
+          "especialidad": "string",
+          "created_at": "datetime"
+        }
+      },
+      "example": {
+        "request": {
+          "nombre": "Dr. Juan García",
+          "especialidad": "cardiología"
+        },
+        "response": {
+          "id": "550e8400-e29b-41d4-a716-446655440000",
+          "nombre": "Dr. Juan García",
+          "especialidad": "cardiología",
+          "created_at": "2026-02-10T10:30:00"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/doctores",
+      "description": "Obtener todos los doctores",
+      "response": {
+        "status": 200,
+        "body": "Array de objetos Doctor"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/doctores/{doctor_id}",
+      "description": "Obtener doctor por ID",
+      "parameters": {
+        "doctor_id": "string (UUID del doctor)"
+      },
+      "response": {
+        "status": 200,
+        "body": "Objeto Doctor"
+      },
+      "errors": [
+        {
+          "status": 404,
+          "message": "Doctor no encontrado"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/doctores/especialidad/{especialidad}",
+      "description": "Buscar doctores por especialidad",
+      "parameters": {
+        "especialidad": "string (una de las especialidades disponibles)"
+      },
+      "response": {
+        "status": 200,
+        "body": "Array de objetos Doctor"
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/doctores/{doctor_id}",
+      "description": "Eliminar doctor",
+      "parameters": {
+        "doctor_id": "string (UUID del doctor)"
+      },
+      "response": {
+        "status": 204,
+        "body": "Sin contenido"
+      },
+      "errors": [
+        {
+          "status": 404,
+          "message": "Doctor no encontrado"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "description": "Health check del servicio",
+      "response": {
+        "status": 200,
+        "body": {
+          "status": "ok",
+          "service": "doctores"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/info",
+      "description": "Información de la API",
+      "response": {
+        "status": 200,
+        "body": {
+          "nombre": "string",
+          "versión": "string",
+          "descripción": "string",
+          "métodos_disponibles": "array",
+          "especialidades": "array"
+        }
+      }
+    }
+  ],
+  "http_status_codes": {
+    "200": "OK - Solicitud exitosa",
+    "201": "Created - Recurso creado",
+    "204": "No Content - Eliminación exitosa (sin cuerpo)",
+    "400": "Bad Request - Datos inválidos",
+    "404": "Not Found - Recurso no encontrado",
+    "500": "Internal Server Error"
+  },
+  "architecture": {
+    "pattern": "Hexagonal Architecture",
+    "layers": [
+      {
+        "name": "Domain",
+        "files": ["domain/doctor.py"],
+        "responsibility": "Modelos y reglas de negocio"
+      },
+      {
+        "name": "Application",
+        "files": [
+          "application/ports/doctor_repository.py",
+          "application/services/doctor_services.py"
+        ],
+        "responsibility": "Casos de uso y puertos"
+      },
+      {
+        "name": "Infrastructure",
+        "files": [
+          "infrastructure/adapters/doctor_repository.py",
+          "infrastructure/api/doctor_main.py"
+        ],
+        "responsibility": "Implementaciones concretas"
+      }
+    ]
+  },
+  "curl_examples": {
+    "create": "curl -X POST http://localhost:8002/doctores -H 'Content-Type: application/json' -d '{\"nombre\": \"Dr. Pedro Sánchez\", \"especialidad\": \"oncología\"}'",
+    "list": "curl http://localhost:8002/doctores",
+    "get_by_id": "curl http://localhost:8002/doctores/{doctor_id}",
+    "search_by_specialty": "curl http://localhost:8002/doctores/especialidad/cardiología",
+    "delete": "curl -X DELETE http://localhost:8002/doctores/{doctor_id}",
+    "health": "curl http://localhost:8002/health"
+  },
+  "documentation": {
+    "swagger": "http://localhost:8002/docs",
+    "redoc": "http://localhost:8002/redoc",
+    "openapi_json": "http://localhost:8002/openapi.json"
+  },
+  "run_command": "python doctor_main.py",
+  "port": 8002
+}
